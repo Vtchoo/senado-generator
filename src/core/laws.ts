@@ -21,16 +21,31 @@ interface Action {
     plural: string
 }
 
+// Data structure interfaces for dependency injection
+interface LawsData {
+    baseText?: string[]
+    predicates?: string[]
+    subjects?: NounWithGender[]
+    objects?: ObjectWithArticle[]
+    establishments?: EstablishmentWithArticle[]
+    personActions?: Action[]
+    establishmentActions?: Action[]
+    resources?: string[]
+    problems?: string[]
+    diseases?: string[]
+    drugs?: string[]
+}
+
 class Laws {
 
-    // String padrão
-    private readonly baseText = [
+    // Default data - can be overridden via constructor
+    private readonly defaultBaseText = [
         'Projeto de lei {predicate}',
         'Senado vota projeto de lei que {predicate}',
         'AGORA É LEI! Senado aprova PL{number,1000,99999,0}, que {predicate}',
     ]
 
-    private readonly predicates = [
+    private readonly defaultPredicates = [
         'obriga {subject:plural} a {action:infinitive,person}',
         'proibe {subject:plural} de {action:infinitive,person}',
         'obriga {establishment:plural} a {action:infinitive,establishment}',
@@ -48,7 +63,7 @@ class Laws {
         'isenta {subject:plural} do imposto de renda',
     ]
 
-    private readonly subjects: NounWithGender[] = [
+    private readonly defaultSubjects: NounWithGender[] = [
         { singular: 'pessoa', plural: 'pessoas', gender: 'f' },
         { singular: 'homem', plural: 'homens', gender: 'm' },
         { singular: 'mulher', plural: 'mulheres', gender: 'f' },
@@ -89,7 +104,7 @@ class Laws {
         { singular: 'professor', plural: 'professores', gender: 'm' },
     ]
 
-    private readonly objects: ObjectWithArticle[] = [
+    private readonly defaultObjects: ObjectWithArticle[] = [
         { singular: 'álcool em gel', plural: 'álcoois em gel', gender: 'm', article: 'o' },
         { singular: 'máscara de proteção', plural: 'máscaras de proteção', gender: 'f', article: 'a' },
         { singular: 'telefone celular', plural: 'telefones celulares', gender: 'm', article: 'o' },
@@ -102,7 +117,7 @@ class Laws {
         { singular: 'absorvente', plural: 'absorventes', gender: 'm', article: 'o' },
     ]
 
-    private readonly establishments: EstablishmentWithArticle[] = [
+    private readonly defaultEstablishments: EstablishmentWithArticle[] = [
         { singular: 'restaurante', plural: 'restaurantes', gender: 'm', article: 'o' },
         { singular: 'farmácia', plural: 'farmácias', gender: 'f', article: 'a' },
         { singular: 'posto de gasolina', plural: 'postos de gasolina', gender: 'm', article: 'o' },
@@ -122,7 +137,7 @@ class Laws {
         { singular: 'hotel', plural: 'hotéis', gender: 'm', article: 'o' },
     ]
 
-    private readonly personActions: Action[] = [
+    private readonly defaultPersonActions: Action[] = [
         { infinitive: 'utilizar {object} dentro de {establishment} em horário comercial', thirdPerson: 'utilize {object} dentro de {establishment} em horário comercial', plural: 'utilizem {object} dentro de {establishment} em horário comercial' },
         { infinitive: 'agredir {subject}', thirdPerson: 'agrida {subject}', plural: 'agridam {subject}' },
         { infinitive: 'praticar tentativa de homicídio', thirdPerson: 'pratique tentativa de homicídio', plural: 'pratiquem tentativa de homicídio' },
@@ -133,18 +148,18 @@ class Laws {
         { infinitive: 'praticar atividades ao ar livre', thirdPerson: 'pratique atividades ao ar livre', plural: 'pratiquem atividades ao ar livre' },
     ]
 
-    private readonly establishmentActions: Action[] = [
+    private readonly defaultEstablishmentActions: Action[] = [
         { infinitive: 'disponibilizar {object} grátis para {subject}', thirdPerson: 'disponibilize {object} grátis para {subject}', plural: 'disponibilizem {object} grátis para {subject}' },
         { infinitive: 'oferecer desconto de {number,0,100,0}% para {subject}', thirdPerson: 'ofereça desconto de {number,0,100,0}% para {subject}', plural: 'ofereçam desconto de {number,0,100,0}% para {subject}' },
         { infinitive: 'oferecer desconto de {number,0,100,0}% em {object} para {subject}', thirdPerson: 'ofereça desconto de {number,0,100,0}% em {object} para {subject}', plural: 'ofereçam desconto de {number,0,100,0}% em {object} para {subject}' },
     ]
 
-    private readonly resources = [
+    private readonly defaultResources = [
         'PIB',
         'valor arrecadado com impostos'
     ]
 
-    private readonly problems = [
+    private readonly defaultProblems = [
         'pandemia de {disease}',
         'racismo',
         'homofobia',
@@ -162,7 +177,7 @@ class Laws {
         'aquecimento global'
     ]
 
-    private readonly diseases = [
+    private readonly defaultDiseases = [
         'COVID-19',
         'coronavirus',
         'dengue',
@@ -176,7 +191,7 @@ class Laws {
         'estatismo'
     ]
 
-    private readonly drugs = [
+    private readonly defaultDrugs = [
         'maconha',
         'crack',
         'heroína',
@@ -185,6 +200,33 @@ class Laws {
         'cerveja',
         'álcool',
     ]
+
+    // Injected or default data
+    private readonly baseText: string[]
+    private readonly predicates: string[]
+    private readonly subjects: NounWithGender[]
+    private readonly objects: ObjectWithArticle[]
+    private readonly establishments: EstablishmentWithArticle[]
+    private readonly personActions: Action[]
+    private readonly establishmentActions: Action[]
+    private readonly resources: string[]
+    private readonly problems: string[]
+    private readonly diseases: string[]
+    private readonly drugs: string[]
+
+    constructor(injectedData?: LawsData) {
+        this.baseText = injectedData?.baseText ?? this.defaultBaseText
+        this.predicates = injectedData?.predicates ?? this.defaultPredicates
+        this.subjects = injectedData?.subjects ?? this.defaultSubjects
+        this.objects = injectedData?.objects ?? this.defaultObjects
+        this.establishments = injectedData?.establishments ?? this.defaultEstablishments
+        this.personActions = injectedData?.personActions ?? this.defaultPersonActions
+        this.establishmentActions = injectedData?.establishmentActions ?? this.defaultEstablishmentActions
+        this.resources = injectedData?.resources ?? this.defaultResources
+        this.problems = injectedData?.problems ?? this.defaultProblems
+        this.diseases = injectedData?.diseases ?? this.defaultDiseases
+        this.drugs = injectedData?.drugs ?? this.defaultDrugs
+    }
 
     // Gerar nova lei aleatória
     generateNewLaw() {
@@ -326,3 +368,12 @@ class Laws {
 }
 
 export default Laws
+
+// Export interfaces and types for testing
+export { 
+    NounWithGender, 
+    ObjectWithArticle, 
+    EstablishmentWithArticle, 
+    Action, 
+    LawsData 
+}
