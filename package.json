@@ -4,7 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:coverage:watch": "jest --coverage --watch",
+    "test:unit": "jest tests/laws.test.ts tests/list.test.ts",
+    "test:integration": "jest tests/laws.integration.test.ts",
+    "test:verbose": "jest --verbose",
+    "test:silent": "jest --silent",
+    "test:changed": "jest --onlyChanged",
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "test:simple": "ts-node test-simple.ts",
+    "test:concordancy": "ts-node test-concordancy.ts",
+    "test:all": "npm run test:simple && npm run test:concordancy && npm run test:ci",
+    "demo": "node demo-tests.js",
+    "precommit": "node pre-commit.js",
     "start": "ts-node src/index.ts",
     "setup": "ts-node setup.ts",
     "typeorm": "npx typeorm-ts-node-commonjs -d ./dataSource.ts",
@@ -26,6 +40,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.4",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.1"
   }
 }
